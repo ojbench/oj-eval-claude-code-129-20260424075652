@@ -1,0 +1,21 @@
+22
+Declare int a 3
+Print a
+Indent
+Declare int a 4
+Print a
+SelfAdd a 10
+Print a
+Dedent
+Print a
+Declare string s hello
+Print s
+SelfAdd s world
+Print s
+Indent
+Declare string s nested
+Print s
+Add s s s
+Print s
+Dedent
+Print s
