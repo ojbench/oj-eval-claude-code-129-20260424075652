@@ -54,6 +54,19 @@ VariableInfo* get_variable(const string& name) {
     return &it->second.back();
 }
 
+bool is_integer(const string& s) {
+    if (s.empty()) return false;
+    size_t start = 0;
+    if (s[0] == '-' || s[0] == '+') {
+        if (s.length() == 1) return false;
+        start = 1;
+    }
+    for (size_t i = start; i < s.length(); ++i) {
+        if (!isdigit(s[i])) return false;
+    }
+    return true;
+}
+
 void solve() {
     int n;
     if (!(cin >> n)) return;
@@ -61,11 +74,15 @@ void solve() {
 
     for (int i = 0; i < n; ++i) {
         string cmd;
-        cin >> cmd;
+        if (!(cin >> cmd)) break;
         if (cmd == "Indent") {
             indent();
         } else if (cmd == "Dedent") {
-            dedent();
+            if (current_level == 0) {
+                cout << "Invalid operation" << endl;
+            } else {
+                dedent();
+            }
         } else if (cmd == "Declare") {
             string type, name, val_str;
             cin >> type >> name >> val_str;
@@ -73,11 +90,16 @@ void solve() {
                 cout << "Invalid operation" << endl;
             } else {
                 if (type == "int") {
-                    symbol_table[name].push_back({VariableValue(stoll(val_str)), current_level});
+                    if (is_integer(val_str)) {
+                        symbol_table[name].push_back({VariableValue(stoll(val_str)), current_level});
+                        scope_stack.back().push_back(name);
+                    } else {
+                        cout << "Invalid operation" << endl;
+                    }
                 } else {
                     symbol_table[name].push_back({VariableValue(val_str), current_level});
+                    scope_stack.back().push_back(name);
                 }
-                scope_stack.back().push_back(name);
             }
         } else if (cmd == "Add") {
             string res_name, v1_name, v2_name;
@@ -103,7 +125,11 @@ void solve() {
                 cout << "Invalid operation" << endl;
             } else {
                 if (var->value.is_int) {
-                    var->value.int_val += stoll(val_str);
+                    if (is_integer(val_str)) {
+                        var->value.int_val += stoll(val_str);
+                    } else {
+                        cout << "Invalid operation" << endl;
+                    }
                 } else {
                     var->value.str_val += val_str;
                 }
@@ -120,6 +146,10 @@ void solve() {
                 else cout << var->value.str_val;
                 cout << endl;
             }
+        } else {
+            // Unknown command? The problem says "Invalid operation" for malformed instructions
+            // But it doesn't specify if we should consume the rest of the line.
+            // Let's assume commands are always one of the 6.
         }
     }
 }
