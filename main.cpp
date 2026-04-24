@@ -82,6 +82,7 @@ string read_string() {
 void solve() {
     int n;
     if (!(cin >> n)) return;
+    scope_stack.reserve(105);
     scope_stack.push_back({}); // global scope
 
     for (int i = 0; i < n; ++i) {
@@ -166,7 +167,7 @@ void solve() {
                 cout << "Invalid operation" << endl;
             } else {
                 cout << name << ":";
-                if (var->value.is_int) cout << var->value.int_val;
+                if (var->value.is_int) cout << (int)var->value.int_val;
                 else cout << var->value.str_val;
                 cout << endl;
             }
